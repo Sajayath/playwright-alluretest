@@ -1,0 +1,3 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Mon May 27 13:53:06 IST 2024","Mon May 27 13:53:15 IST 2024","9131","chromium","test1.spec.js","","","","Clinet page e2e testing",""
+"passed","Mon May 27 13:53:06 IST 2024","Mon May 27 13:53:12 IST 2024","6804","chromium","test2.spec.js","","","","Login Functionality",""
