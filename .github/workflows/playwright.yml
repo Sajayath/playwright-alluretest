@@ -9,17 +9,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]  # Update to the versions you want to test against
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npx playwright install --with-deps
-    - run: npm run build --if-present
-    - run: npx playwright test 
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+      
+    - name: Build project
+      run: npm run build --if-present
+      
+    - name: Run Playwright tests
+      run: npx playwright test
 
     - name: Get Allure history
       uses: actions/checkout@v3
@@ -29,18 +42,20 @@ jobs:
         ref: gh-pages
         path: gh-pages
 
-    - name: Build test report
-        uses: simple-elf/allure-report-action@master
-        if: always()
-        with:
-          gh_pages: gh-pages
-          allure_history: allure-history
-          allure_results: build/allure-results
+    - name: Generate Allure report
+      uses: simple-elf/allure-report-action@v1.7.0  # Specify the latest version
+      if: always()
+      id: allure-report
+      with:
+        allure_results: allure-results
+        gh_pages: gh-pages
+        allure_report: allure-report
+        allure_history: allure-history
 
-      - name: Publish test report
-        uses: peaceiris/actions-gh-pages@v3
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
+    - name: Deploy report to GitHub Pages
+      if: always()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: allure-report  # Updated to use allure-report directory
