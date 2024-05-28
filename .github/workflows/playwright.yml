@@ -46,7 +46,7 @@ jobs:
         cp -r gh-pages/history allure-results || echo "No previous history found"
 
     - name: Generate Allure report
-      uses: simple-elf/allure-report-action@v1.7.0
+      uses: simple-elf/allure-report-action@master
       if: always()
       id: allure-report
       with:
