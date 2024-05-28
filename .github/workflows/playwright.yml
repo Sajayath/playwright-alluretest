@@ -9,9 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x, 20.x]  # Update to the versions you want to test against
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -32,7 +29,7 @@ jobs:
       run: npm run build --if-present
       
     - name: Run Playwright tests
-      run: npx playwright test
+      run: npx playwright test --reporter=line,allure-playwright
 
     - name: Get Allure history
       uses: actions/checkout@v3
@@ -42,15 +39,21 @@ jobs:
         ref: gh-pages
         path: gh-pages
 
+    - name: Copy Allure history
+      if: always()
+      run: |
+        mkdir -p allure-results/history
+        cp -r gh-pages/history allure-results || echo "No previous history found"
+
     - name: Generate Allure report
-      uses: simple-elf/allure-report-action@v1.7.0  # Specify the latest version
+      uses: simple-elf/allure-report-action@v1.7.0
       if: always()
       id: allure-report
       with:
         allure_results: allure-results
         gh_pages: gh-pages
         allure_report: allure-report
-        allure_history: allure-history
+        allure_history: allure-results/history
 
     - name: Deploy report to GitHub Pages
       if: always()
@@ -58,4 +61,4 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_branch: gh-pages
-        publish_dir: allure-report  # Updated to use allure-report directory
+        publish_dir: allure-report
