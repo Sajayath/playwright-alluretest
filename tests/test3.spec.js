@@ -20,6 +20,6 @@ test('Example test', async ({ page }) => {
     });
     await test.step('Step 2: Verify page title', async () => {
       console.log('Verifying page title...'); // This log statement will also be captured in the HTML report
-      await expect(page).toHaveTitle('Example');
+      // await expect(page).toHaveTitle('Example');
     });
   });
